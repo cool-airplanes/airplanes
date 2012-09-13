@@ -10,7 +10,7 @@ dependencies:
 nginx:
 	@sed 's/PWD/${PWD}/g' < nginx.conf.sample | sed 's/PORT/${PORT}/g' > nginx.conf
 	@sudo rm -f /etc/nginx/sites-available/airplanes /etc/nginx/sites-enabled/airplanes
-	@sudo ln nginx.conf /etc/nginx/sites-available/airplanes
+	@sudo ln -s nginx.conf /etc/nginx/sites-available/airplanes
 	@sudo ln -s /etc/nginx/sites-available/airplanes /etc/nginx/sites-enabled/airplanes
 	@sudo service nginx restart
 
@@ -23,4 +23,8 @@ bootstrap:
 
 install: dependencies nginx bootstrap
 
-.PHONY: dependencies nginx bootstrap install
+startdb:
+	@mkdir -p db/
+	@mongod --dbpath db/ --port 28080
+
+.PHONY: dependencies nginx bootstrap install startdb
