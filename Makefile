@@ -10,7 +10,7 @@ dependencies:
 nginx:
 	@sed 's/PWD/${PWD}/g' < nginx.conf.sample | sed 's/PORT/${PORT}/g' > nginx.conf
 	@sudo rm -f /etc/nginx/sites-available/airplanes /etc/nginx/sites-enabled/airplanes
-	@sudo ln -s nginx.conf /etc/nginx/sites-available/airplanes
+	@sudo mv nginx.conf /etc/nginx/sites-available/airplanes
 	@sudo ln -s /etc/nginx/sites-available/airplanes /etc/nginx/sites-enabled/airplanes
 	@sudo service nginx restart
 
