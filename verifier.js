@@ -13,8 +13,8 @@ verifier.isValidPassword = function(password) {
     if (password.length < 5 || password.length > 20)
         return {"ok":false, "what":"Password must be between 6 and 20 characters"};
     var regexRule = new RegExp("([\S]*[0-9]*)*");
-    if (regexRule,test(password))
-        return {"ok":true};
+    if (regexRule.test(password))
+        return {"ok":true, "what" : "OK!"};
     return {"ok":false, "what":"Password contains invalid characters"}
 }
 

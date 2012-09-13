@@ -11,6 +11,6 @@ $(function() {
             "password" : $("#password").val()
         };
 
-        socket.emit('register', data);
+        socket.emit('register', data.username, data.name, data.password);
     });
 });

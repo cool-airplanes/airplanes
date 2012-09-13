@@ -1,11 +1,24 @@
 var mongodb = require('mongojs').connect('127.0.0.1:28080/avioane', ['users', 'games', 'pool']);
+var verify = require('../verifier');
 
 var user = {}
 
 user.add = function(username, name, password, callback) {
-    // TODO: check username, name, password
     // TODO: hash password
-    //
+
+    // input validation
+    console.log("username: " + username + " type: " + typeof(username));
+    userCheck = verify.isValidUsername(username);
+    passwordCheck = verify.isValidPassword(password);
+    if (!userCheck.ok) {
+        callback(userCheck);
+        return;
+    }
+    if (!passwordCheck.ok) {
+        callback(passwordCheck);
+        return;
+    }
+
     // check if user exists
     mongodb.users.find({"username" : username}, function(err, result) {
         if (result.length) {
@@ -32,7 +45,13 @@ user.add = function(username, name, password, callback) {
 }
 
 user.get = function(username, callback) {
-    // TODO: check username
+    // input validation
+    userCheck = verify.isValidUsername(username);
+    if (!userCheck.ok) {
+        callback(userCheck);
+        return;
+    }
+
     mongodb.users.find({"username" : username}, function(err, result) {
          if (err) {
             callback({"ok" : false, "what" : "Error finding user."}, {});
@@ -54,7 +73,18 @@ user.get = function(username, callback) {
 }
 
 user.update = function(username, name, password, callback) {
-    // TODO: check name and password
+    // input validation
+    userCheck = verify.isValidUsername(username);
+    passwordCheck = verify.isValidPassword(password);
+    if (!userCheck.ok) {
+        callback(userCheck);
+        return;
+    }
+    if (!passwordCheck.ok) {
+        callback(passwordCheck);
+        return;
+    }
+
     user.get(username, function(result) {
         if (!result.ok) {
             callback(result);
