@@ -96,4 +96,31 @@ user.login = function(username, password, callback) {
     })
 }
 
+user.logout = function(username, password, callback) {
+    // TODO: disconnect from game
+    user.get(username, function(err, result) {
+        if (!err.ok) {
+            callback(err);
+            return;
+        }
+        if (result.password != password) {
+            callback({"ok" : false, "what" : "Wrong password!"});
+            return;
+        }
+        if (result.status == "offline") {
+            callback({"ok" : false, "what" : "User is offline."});
+            return;
+        }
+
+        // update
+        mongodb.users.update({"username" : username}, {$set: {"status" : "offline"}}, function(err, updated) {
+            if (err || !updated) {
+                callback({"ok" : false, "what" : "Error loging in."});
+                return;
+            }
+            callback({"ok" : true, "what" : "OK!"});
+        })
+    })
+}
+
 module.exports.user = user;
