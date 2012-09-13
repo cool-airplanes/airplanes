@@ -42,7 +42,3 @@ verifier.isValidTable = function(rows, cols, airplanes, table) {
     return {"ok": true};   
 }
 
-exports.isValidUsername = verifier.isValidUsername;
-exports.isValidPassword = verifier.isValidPassword;
-exports.isArray = verifier.isArray;
-exports.isValidTable = verifier.isValidTable;
