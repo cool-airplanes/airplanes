@@ -1,8 +1,8 @@
 var http = require('../../dbf/util.js');
 
-function solve(username, name, password) {
-	user.login(username, name, password, function(message) {
-		socket.emit(message.what);
+function solve(username, password) {
+	db.user.login(username, password, function(message) {
+		socket.emit(message);
 	});
 }
 
