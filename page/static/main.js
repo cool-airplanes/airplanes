@@ -12,5 +12,6 @@ $(function() {
         };
 
         socket.emit('register', data.username, data.name, data.password);
+    	return false;
     });
 });
