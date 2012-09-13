@@ -19,7 +19,7 @@ var user = require('./controllers/user');
 
 io.sockets.on('connection', function(socket) {
     socket.on('register', user.register.bind(this, socket));
-    socket.on('login', user.login);
+    socket.on('login', user.login.bind(this, socket));
     socket.on('test', function(data) {
         console.log("Am primit un test!");
     });

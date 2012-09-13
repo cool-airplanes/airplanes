@@ -3,7 +3,7 @@
 	<head>
 		<title> Login </title>
 		<meta charset="UTF-8"/>
-		<link rel = "stylesheet" href = "/static/styles.css" type = "text/css" />	
+		<link rel = "stylesheet" href = "/static/styles.css" type = "text/css" />
 	</head>
 
 	<body>
@@ -14,16 +14,16 @@
 						<img class = "login_left" src = "/static/Images/login_left.jpg"/>
 					</div>
 
-					<div class = "right">	
+					<div class = "right">
 						<form id = "form_login">
 							<span class = "floating">
-								<label class = "label"> USERNAME: </label> <br/> <input class = "input" name = "username" type = "text"/> 
+								<label class = "label"> USERNAME: </label> <br/> <input class = "input" name = "username" type = "text" id = "login_username"/>
 							</span>
 							<span class = "floating">
-								<label class = "label"> PASSWORD: </label> <br/> <input class = "input" name = "password" type = "text"/> 
+								<label class = "label"> PASSWORD: </label> <br/> <input class = "input" name = "password" type = "password" id = "login_password"/>
 							</span>
 							<span>
-								<input class = "btn btn_link" type = "button" value = "LOG IN" />
+								<input class = "btn btn_link" type = "button" value = "LOG IN" id = "login" />
 							</span>
 						</form>
 
@@ -33,21 +33,21 @@
 							<form>
 								<span class = "reg">
 									<label class = "label"> NAME: </label> <input class = "input align" name = "name" type = "text" id="name"/>
-								</span> 
-								<span class = "reg">
-									<label class = "label"> USERNAME: </label> <input class = "input align" name = "username" type = "text" id="username"/> 
 								</span>
 								<span class = "reg">
-									<label class = "label"> PASSWORD: </label> <input class = "input align" name = "password" type = "password" id="password"/> 
+									<label class = "label"> USERNAME: </label> <input class = "input align" name = "username" type = "text" id="username"/>
 								</span>
-								<span class = "reg"> 
-									<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input align" name = "re-type_password" type = "password" id="password2"/> 
+								<span class = "reg">
+									<label class = "label"> PASSWORD: </label> <input class = "input align" name = "password" type = "password" id="password"/>
 								</span>
-								
+								<span class = "reg">
+									<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input align" name = "re-type_password" type = "password" id="password2"/>
+								</span>
+
 								<input class = "btn btn_link btn_reg" type = "submit" value = "REGISTER" id="register" />
 							</form>
 						</div>
-					</div>		
+					</div>
 
 				</div>
 			</div>
