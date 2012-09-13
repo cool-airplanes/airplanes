@@ -4,7 +4,7 @@ PORT=9200
 dependencies:
 	@echo "Instaling dependencies"
 	@sudo apt-get -q=2 install nginx nodejs npm mongodb 
-	@sudo npm -q install recess connect uglify-js jshint mongojs -g
+	@sudo npm -q install recess connect uglify-js jshint mongojs socket.io -g 
 	@echo "Done\n"
 	
 nginx:
