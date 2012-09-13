@@ -1,5 +1,5 @@
 PWD=$(shell echo `pwd` | sed 's/\//\\\//g')
-PORT=9200
+PORT=8080
 
 dependencies:
 	@echo "Instaling dependencies"
