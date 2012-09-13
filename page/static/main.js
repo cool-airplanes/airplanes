@@ -1,6 +1,5 @@
 var socket = io.connect('http://127.0.0.1:8080');
 socket.on('register-response', function(message) {
-    //alert(message.what);    
     var x = "<div class='alert";
     if (message.ok)
     	x += " alert-success'";
@@ -22,6 +21,6 @@ $(function() {
     	return false;
     });
     $(document).on("click", ".alert > .close ", function() {
-    	$(this).parent().hide("slow");
+    	$(this).parent().hide("normal");
     });
 });
