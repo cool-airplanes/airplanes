@@ -28,7 +28,6 @@ user.add = function(username, name, password, callback) {
                 "username" : username,
                 "name" : name,
                 "password" : password,
-                "status" : "offline",
                 "in_game" : "null"
             };
             console.log("username: ", username);
@@ -98,59 +97,6 @@ user.update = function(username, name, password, callback) {
             callback({"ok" : true, "what" : "OK!"});
         });
     });
-}
-
-user.login = function(username, password, callback) {
-    user.get(username, function(err, result) {
-        if (!err.ok) {
-            callback(err);
-            return;
-        }
-        if (result.password != password) {
-            callback({"ok" : false, "what" : "Wrong password!"});
-            return;
-        }
-        if (result.status != "offline") {
-            callback({"ok" : false, "what" : "User already logged in."});
-            return;
-        }
-
-        // update
-        mongodb.users.update({"username" : username}, {$set: {"status" : "online"}}, function(err, updated) {
-            if (err || !updated) {
-                callback({"ok" : false, "what" : "Error loging in."});
-                return;
-            }
-            callback({"ok" : true, "what" : "OK!"});
-        })
-    })
-}
-
-user.logout = function(username, password, callback) {
-    // TODO: disconnect from game
-    user.get(username, function(err, result) {
-        if (!err.ok) {
-            callback(err);
-            return;
-        }
-        if (result.password != password) {
-            callback({"ok" : false, "what" : "Wrong password!"});
-            return;
-        }
-        if (result.status == "offline") {
-            callback({"ok" : false, "what" : "User is offline."});
-            return;
-        }
-
-        // update
-        mongodb.users.update({"username" : username}, {$set: {"status" : "offline"}}, function(err, updated) {
-            if (err || !updated) {
-                callback({"ok" : false, "what" : "Error loging in."});
-                return;
-            }
-            callback({"ok" : true, "what" : "OK!"});
-        })
-    })
 }
 
 module.exports.user = user;
