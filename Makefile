@@ -1,5 +1,5 @@
 PWD=$(shell echo `pwd` | sed 's/\//\\\//g')
-PORT=8080
+PORT=9200
 
 dependencies:
 	@echo "Instaling dependencies"
@@ -27,4 +27,7 @@ startdb:
 	@mkdir -p db/
 	@mongod --dbpath db/ --port 28080
 
-.PHONY: dependencies nginx bootstrap install startdb
+start:
+	@node www/index.js
+
+.PHONY: dependencies nginx bootstrap install startdb start

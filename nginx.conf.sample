@@ -1,5 +1,5 @@
 server {
-    listen 9500;
+    listen 8080;
     
     location ~ ^(static/.*)$ {
         root PWD/static;
