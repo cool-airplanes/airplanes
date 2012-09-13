@@ -18,7 +18,7 @@ server.listen(8080, '127.0.0.1');
 var user = require('./controllers/user');
 
 io.sockets.on('connection', function(socket) {
-    socket.on('register', user.register);
+    socket.on('register', user.register.bind(this, socket));
     socket.on('login', user.login);
     socket.on('test', function(data) {
         console.log("Am primit un test!");

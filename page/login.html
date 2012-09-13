@@ -31,19 +31,19 @@
 							<h2>SIGN UP </h2>
 							<form>
 								<span class = "reg">
-									<label class = "label"> &nbsp;NAME: </label> <input class = "input" name = "name" type = "text"/>
+									<label class = "label"> &nbsp;NAME: </label> <input class = "input" name = "name" id = "name" type = "text"/>
 								</span> 
 								<span class = "reg">
-									<label class = "label"> USERNAME: </label> <input class = "input" name = "username" type = "text"/> 
+									<label class = "label"> USERNAME: </label> <input class = "input" name = "username" id = "username" type = "text"/> 
 								</span>
 								<span class = "reg">
-									<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" type = "text"/> 
+									<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" id = "password" type = "password"/> 
 								</span>
 								<span class = "reg"> 
-									<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input" name = "re-type_password" type = "text"/> 
+									<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input" name = "re-type_password" id = "password2" type = "password"/> 
 								</span>
 								
-								<input class = "btn" type = "button" value = "REGISTER" />
+								<input class = "btn" type = "button" value = "REGISTER" id="register"/>
 							</form>
 						</div>
 					</div>		
@@ -52,6 +52,8 @@
 			</div>
 		</div>
 
-
+    <script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"> </script>
+    <script src="/socket.io/socket.io.js"></script>
+    <script type="text/javascript" src="static/main.js"> </script>
 	</body>
 </html>
