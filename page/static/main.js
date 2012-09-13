@@ -18,10 +18,10 @@ socket.on('register-response', alerts);
 socket.on('login-response', alerts);
 
 $(function() {
-    $(document).on("click", "register", function() {
+    $(document).on("click", "#register", function() {
         if ($("#password").val() != $("#password2").val()) {
             alerts({"ok" : false, "what" : "The 2 passwords must match"});
-            return;
+            return false;
         }
         var data = {
             "username" : $("#username").val(),
