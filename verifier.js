@@ -4,7 +4,7 @@ verifier.isValidUsername = function(username) {
         return {"ok":false, "what":"Username must be string"};
     if (username.length < 5 || username.length > 15)
         return {"ok":false, "what":"Username must have between 5 and 15 characters"};
-    var regexRule = new RegExp("(\w|-|_)*");    
+    var regexRule = new RegExp("(\w|-|_)*");
     return {"ok":regexRule.test(username)};
 }
 verifier.isValidPassword = function(password) {
@@ -35,11 +35,11 @@ verifier.isValidTable = function(rows, cols, airplanes, table) {
     }
 
     for (var i = 0; i < rows; ++i)
-        for (var j = 0; j < rows; ++j) 
+        for (var j = 0; j < rows; ++j)
             if (table[i][j] < 0 || table[i][j] > 5)
                 return {"ok":false, "what":"Table has invalid cell value"};
     // TODO: Check if planes are actually well arranged
-    return {"ok": true};   
+    return {"ok": true};
 }
 
 exports.isValidUsername = verifier.isValidUsername;
