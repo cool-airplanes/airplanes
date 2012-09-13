@@ -51,4 +51,21 @@ user.get = function(username, callback) {
     });
 }
 
+user.update = function(username, name, password, callback) {
+    // TODO: check name and password
+    user.get(username, function(result) {
+        if (!result.ok) {
+            callback(result);
+            return;
+        }
+        mongodb.users.update({"username" : username}, {$set: {"name": name, "password" : password}}, function(error, updated) {
+            if (error || !updated) {
+                callback({"ok" : false, "what" : "Error saving information"});
+                return;
+            }
+            callback({"ok" : true, "what" : "OK!"});
+        });
+    });
+}
+
 module.exports.user = user;
