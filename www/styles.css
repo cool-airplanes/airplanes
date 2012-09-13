@@ -85,9 +85,6 @@ label.label {
 	font-size: 11px;
 	color: #333333;
 	bottom: 5px;
-	position: relative;
-	text-align: middle;
-	direction: rtl;
 }
 
 input.input {
@@ -98,6 +95,12 @@ input.input {
 	-moz-border-radius: 3px;
 	border-radius: 3px;
 	padding: 0px;
+}
+
+input.align {
+	float: right;
+	margin-right: 130px;
+	width: 280px;
 }
 
 input.btn {
@@ -118,14 +121,32 @@ input.btn {
 div.register {
 	background-color: #efefef;
 	margin-top: 10px;
-	padding: 20px 40px 30px 20px;
+	padding: 20px 40px 50px 20px;
 	width: 510px;
+	height: 260px;
 }
 
+div.register hr {
+	position: relative;
+	top: -10px;
+	border: solid 1px white;
+}
+
+div.register h2 {
+	font-family: "Helvetica";
+	font-weight: normal;
+	font-size: 14px;
+}
+
+div.register span {
+	margin-bottom: 15px;
+}
 span.reg {
 	display: block;
 	width: 600px;
-	padding-bottom: 15px;
+	padding-bottom: 15px;		
+	text-align: right;
+	vertical-align: middle;
 }
 
 span.reg label { 
@@ -134,5 +155,28 @@ span.reg label {
 	padding: 10px;
 }
 
+label.align {
+	float: right;
+}
 
+input.btn_reg {
+	height: 27px;
+	width: 76px;
+	background-color: #5e99d7;
+	border: none;
+	-webkit-border-radius: 3px;
+	-moz-border-radius: 3px;
+	border-radius: 3px;
+	padding: 0px;
+	font-size: 11px;
+	color: #ffffff;
+	font-weight: bold;
+	float: right;
+	margin-top: 5px;
+	margin-right: 40px;
+	display: block;
+}
 
+.btn_link:hover {
+	cursor: pointer;
+};
