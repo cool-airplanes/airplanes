@@ -1,4 +1,5 @@
 var fs = require('fs');
+var session = require('./session.js');
 
 var server = require('http').createServer(function(request, response) {
   	fs.readFile(__dirname + '/../page/login.html', function (error, data) {

@@ -18,7 +18,7 @@ socket.on('register-response', alerts);
 socket.on('login-response', alerts);
 
 $(function() {
-    $("#register").on("click", function() {
+    $(document).on("click", "register", function() {
         if ($("#password").val() != $("#password2").val()) {
             alerts({"ok" : false, "what" : "The 2 passwords must match"});
             return;
@@ -37,12 +37,13 @@ $(function() {
     });
 
     // TODO: user better selectors
-    $("#login").on("click", function() {
+    $(document).on("click", "#login", function() {
         var data = {
             "username" : $("#login_username").val(),
             "password" : $("#login_password").val()
         };
 
         socket.emit('login', data.username, data.password);
+        return false;
     })
 });
