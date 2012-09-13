@@ -21,9 +21,11 @@ user.add = function(username, name, password, callback) {
             console.log("username: ", username);
             console.log(JSON.stringify(user));
             mongodb.users.save(user, function(err, saved) {
-                if (saved && !err) {
-                    callback({"ok" : true, "what" : "OK!"});
+                if (!saved || err) {
+                    callback({"ok" : false, "what" : "Error adding user."});
+                    return;
                 }
+                callback({"ok" : true, "what" : "OK!"});
             });
         }
     });
@@ -49,6 +51,32 @@ user.get = function(username, callback) {
             }
         }
     });
+}
+
+user.login = function(username, password, callback) {
+    user.get(username, function(err, result) {
+        if (!err.ok) {
+            callback(err);
+            return;
+        }
+        if (result.password != password) {
+            callback({"ok" : false, "what" : "Wrong password!"});
+            return;
+        }
+        if (result.status != "offline") {
+            callback({"ok" : false, "what" : "User already logged in."});
+            return;
+        }
+
+        // update
+        mongodb.users.update({"username" : username}, {$set: {"status" : "online"}}, function(err, updated) {
+            if (err || !updated) {
+                callback({"ok" : false, "what" : "Error loging in."});
+                return;
+            }
+            callback({"ok" : true, "what" : "OK!"});
+        })
+    })
 }
 
 module.exports.user = user;
