@@ -1,2 +1,3 @@
 nginx.conf
 db/*
+node_modules/
