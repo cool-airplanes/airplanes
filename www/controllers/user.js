@@ -1,6 +1,5 @@
 var db = require('../../dbf/util');
 var session = require('../../www/session');
-var settings = require('../settings')
 
 var userListUpdated = false;
 
