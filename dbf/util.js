@@ -1,4 +1,4 @@
-var mongodb = require('mongojs').connect('127.0.0.1:28080/avioane', ['users', 'games', 'pool']);
+var mongodb = require('mongojs').connect('127.0.0.1:28080/avioane', ['users', 'games']);
 var verify = require('../verifier');
 
 var user = {}

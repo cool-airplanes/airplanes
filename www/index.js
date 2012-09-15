@@ -1,5 +1,4 @@
 var fs = require('fs');
-var session = require('./session.js');
 
 var server = require('http').createServer(function(request, response) {
   	fs.readFile(__dirname + '/../page/login.html', function (error, data) {
@@ -25,11 +24,8 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('register', user.register.bind(this, socket));
     socket.on('login', user.login.bind(this, socket));
-    socket.on('test', function(data) {
-        console.log("Am primit un test!");
-    });
-
     socket.on('logout', user.logout.bind(this, socket));
     // we clear the user from the set, logging him out if he was logged in
     socket.on('disconnect', user.disconnect.bind(this, socket));
+    socket.on('user-list', user.sendUserList.bind(this, socket));
 });
