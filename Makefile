@@ -10,8 +10,8 @@ dependencies:
 install: dependencies
 
 startdb:
-	@mkdir -p db/
-	@mongod --dbpath db/ --port 28080
+	@mkdir -p database/
+	@mongod --dbpath database/ --port 28080 --nojournal
 
 start:
 	@node www/index.js

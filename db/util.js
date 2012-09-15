@@ -7,7 +7,6 @@ user.add = function(username, name, password, callback) {
     // TODO: hash password
 
     // input validation
-    console.log("username: " + username + " type: " + typeof(username));
     userCheck = verify.isValidUsername(username);
     passwordCheck = verify.isValidPassword(password);
     if (!userCheck.ok) {
@@ -30,8 +29,7 @@ user.add = function(username, name, password, callback) {
                 "password" : password,
                 "in_game" : "null"
             };
-            console.log("username: ", username);
-            console.log(JSON.stringify(user));
+
             mongodb.users.save(user, function(err, saved) {
                 if (!saved || err) {
                     callback({"ok" : false, "what" : "Error adding user."});

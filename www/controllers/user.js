@@ -1,4 +1,4 @@
-var db = require('../../dbf/util');
+var db = require('../../db/util');
 var session = require('../../www/session');
 
 var userListUpdated = false;
