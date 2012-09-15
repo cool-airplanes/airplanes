@@ -1,14 +1,45 @@
 var fs = require('fs');
+var path = require('path');
+// we just need to serve static files, eveything is handled by socket.io
 
 var server = require('http').createServer(function(request, response) {
-  	fs.readFile(__dirname + '/../page/login.html', function (error, data) {
-        if (error) {
-          response.writeHead(500);
-          return response.end('Error loading index.html');
+    var filePath = request.url;
+
+    if (filePath == '/')
+        filePath = '/login.html';
+
+    filePath = __dirname + '/../page/' + filePath;
+
+    var contentType = filePath.substring(filePath.lastIndexOf('.') + 1);
+    switch (contentType) {
+        case 'html':
+            break;
+        case 'css':
+            break;
+        case 'js':
+            contentType = 'javascript';
+            break;
+        default:
+            contentType = 'plain';
+    }
+
+    path.exists(filePath, function(exists) {
+        if (!exists) {
+            response.writeHead(404);
+            response.end("Page " + request.url + " not found");
+            return;
         }
 
-        response.writeHead(200, {'Content-Type': 'text/html'});
-        response.end(data);
+        fs.readFile(filePath, function (error, data) {
+            if (error) {
+                response.writeHead(500);
+                response.end('Error loading ' + request.url);
+            }
+
+
+            response.writeHead(200, {'Content-Type': 'text/' + contentType});
+            response.end(data);
+        })
     });
 });
 

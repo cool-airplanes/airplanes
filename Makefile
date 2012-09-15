@@ -4,24 +4,10 @@ PORT=8080
 dependencies:
 	@echo "Instaling dependencies"
 	@sudo apt-get -q=2 install nginx nodejs npm mongodb 
-	@sudo npm -q install recess connect uglify-js jshint mongojs socket.io -g 
+	@sudo npm -q install recess mongojs socket.io
 	@echo "Done\n"
-	
-nginx:
-	@sed 's/PWD/${PWD}/g' < nginx.conf.sample | sed 's/PORT/${PORT}/g' > nginx.conf
-	@sudo rm -f /etc/nginx/sites-available/airplanes /etc/nginx/sites-enabled/airplanes
-	@sudo mv nginx.conf /etc/nginx/sites-available/airplanes
-	@sudo ln -s /etc/nginx/sites-available/airplanes /etc/nginx/sites-enabled/airplanes
-	@sudo service nginx restart
 
-bootstrap:
-	@echo "Installing Bootstrap"
-	@git submodule init
-	@git submodule update
-	@make -C bootstrap bootstrap -s
-	@echo "Bootstrap Installed"
-
-install: dependencies nginx bootstrap
+install: dependencies
 
 startdb:
 	@mkdir -p db/
@@ -30,4 +16,7 @@ startdb:
 start:
 	@node www/index.js
 
-.PHONY: dependencies nginx bootstrap install startdb start
+dbclient:
+	@mongo localhost:28080/avioane
+
+.PHONY: dependencies install startdb start dbclient

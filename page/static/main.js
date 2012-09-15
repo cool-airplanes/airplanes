@@ -49,8 +49,6 @@ $(function() {
 });
 
 socket.on('user-list-response', function(userList) {
-    console.debug(userList);
-
     socket.on('user-login', function(user) { console.log("User Login: " + user.username); });
     socket.on('user-logout', function(user) { console.log("User Logout: " + user.username); });
 });
