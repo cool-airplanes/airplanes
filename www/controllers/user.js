@@ -1,5 +1,6 @@
 var db = require('../../db/util');
 var session = require('../../www/session');
+var security = require('../security');
 
 var userListUpdated = false;
 
@@ -19,7 +20,7 @@ function login(socket, username, password) {
             socket.emit('login-response', message);
             return;
         }
-        if (password != result.password) {
+        if (security.encrypt(password) != result.password) {
             socket.emit('login-response', {"ok" : false, "what" : "Wrong password"});
             return;
         }
@@ -30,13 +31,13 @@ function login(socket, username, password) {
         }
 
         session.sockets.get(socket.id).username = username;
-        session.sockets.get(socket.id).password = password;
+        session.sockets.get(socket.id).password = security.encrypt(password);
         session.sockets.get(socket.id).name = result.name;
         session.sockets.get(socket.id).game = undefined;
 
         session.users.set(username, {
             "username" : username,
-            "password" : password,
+            "password" : security.encrypt(password),
             "name" : result.name,
             "game" : undefined,
             "socket" : socket

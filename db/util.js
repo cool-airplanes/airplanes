@@ -1,5 +1,6 @@
 var mongodb = require('mongojs').connect('127.0.0.1:28080/avioane', ['users', 'games']);
 var verify = require('../verifier');
+var security = require('../www/security');
 
 var user = {}
 
@@ -24,7 +25,7 @@ user.add = function(username, name, password, callback) {
             var user = {
                 "username" : username,
                 "name" : name,
-                "password" : password,
+                "password" : security.encrypt(password),
                 "in_game" : "null"
             };
 
@@ -71,6 +72,7 @@ user.update = function(username, name, password, callback) {
     // input validation
     userCheck = verify.isValidUsername(username);
     passwordCheck = verify.isValidPassword(password);
+
     if (!userCheck.ok) {
         callback(userCheck);
         return;
@@ -85,7 +87,8 @@ user.update = function(username, name, password, callback) {
             callback(result);
             return;
         }
-        mongodb.users.update({"username" : username}, {$set: {"name": name, "password" : password}}, function(error, updated) {
+
+        mongodb.users.update({"username" : username}, {$set: {"name": name, "password" : security.encrypt(password)}}, function(error, updated) {
             if (error || !updated) {
                 callback({"ok" : false, "what" : "Error saving information"});
                 return;

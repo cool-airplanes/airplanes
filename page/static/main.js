@@ -26,7 +26,7 @@ $(function() {
         var data = {
             "username" : $("#username").val(),
             "name" : $("#name").val(),
-            "password" : CryptoJS.SHA1($("#password").val()).toString()
+            "password" : $("#password").val()
         };
 
         socket.emit('register', data.username, data.name, data.password);
@@ -40,7 +40,7 @@ $(function() {
     $(document).on("click", "#login", function() {
         var data = {
             "username" : $("#login_username").val(),
-            "password" : CryptoJS.SHA1($("#login_password").val()).toString()
+            "password" : $("#login_password").val()
         };
 
         socket.emit('login', data.username, data.password);
