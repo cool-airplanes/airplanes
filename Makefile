@@ -3,7 +3,7 @@ PORT=8080
 
 dependencies:
 	@echo "Instaling dependencies"
-	@sudo apt-get -q=2 install nginx nodejs npm mongodb 
+	@sudo apt-get -q=2 install nodejs npm mongodb 
 	@sudo npm -q install recess mongojs socket.io
 	@echo "Done\n"
 
