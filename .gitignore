@@ -1,3 +1,4 @@
 nginx.conf
 database/*
 node_modules/
+page/static/style.css

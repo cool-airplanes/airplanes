@@ -10,21 +10,20 @@
 		<div class = "wrapper">
 			<div class = "container">
 				<div class = "subwrapper">
-					<div class = "left">
-						<img class = "login_left" src = "/static/Images/login_left.jpg"/>
+					<div class = "pull-left login">
+						<img class = "login-left" src = "/static/Images/login_left.jpg"/>
 					</div>
 
-					<div class = "right">
-						<form id = "form_login">
-							<span class = "floating">
-								<label class = "label"> USERNAME: </label> <br/> <input class = "input" name = "username" type = "text" id = "login_username"/>
-							</span>
-							<span class = "floating">
-								<label class = "label"> PASSWORD: </label> <br/> <input class = "input" name = "password" type = "password" id = "login_password"/>
+					<div class = "pull-right login">
+						<form class = "form-login">
+							<span>
+								<label class = "label"> USERNAME: </label> <input class = "input" name = "username" type = "text" id = "login_username"/>
 							</span>
 							<span>
-								<input class = "btn btn_link" type = "submit" value = "LOG IN" id = "login" />
+								<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" type = "password" id = "login_password"/>
 							</span>
+
+							<input class = "btn" type = "submit" value = "LOG IN" id = "login" />
 						</form>
 
                         <div id="alert-wrapper" class="alert-wrapper">
@@ -33,20 +32,20 @@
 							<h2>SIGN UP </h2>
 							<hr>
 							<form>
-								<span class = "reg">
-									<label class = "label"> NAME: </label> <input class = "input align" name = "name" type = "text" id="name"/>
+								<span>
+									<label class = "label"> NAME: </label> <input class = "input" name = "name" type = "text" id="name"/>
 								</span>
-								<span class = "reg">
-									<label class = "label"> USERNAME: </label> <input class = "input align" name = "username" type = "text" id="username"/>
+								<span>
+									<label class = "label"> USERNAME: </label> <input class = "input" name = "username" type = "text" id="username"/>
 								</span>
-								<span class = "reg">
-									<label class = "label"> PASSWORD: </label> <input class = "input align" name = "password" type = "password" id="password"/>
+								<span>
+									<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" type = "password" id="password"/>
 								</span>
-								<span class = "reg">
-									<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input align" name = "re-type_password" type = "password" id="password2"/>
+								<span>
+									<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input" name = "re-type_password" type = "password" id="password2"/>
 								</span>
 
-								<input class = "btn btn_link btn_reg" type = "submit" value = "REGISTER" id="register" />
+								<input class = "btn" type = "submit" value = "REGISTER" id="register" />
 							</form>
 						</div>
 					</div>

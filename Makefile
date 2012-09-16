@@ -19,4 +19,8 @@ start:
 dbclient:
 	@mongo localhost:28080/avioane
 
-.PHONY: dependencies install startdb start dbclient
+less:
+	@recess less/main.less
+	@recess --compile less/main.less > page/static/styles.css
+
+.PHONY: dependencies install startdb start dbclient less
