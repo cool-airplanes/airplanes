@@ -1,61 +1,39 @@
-<!DOCTYPE html>
-<html>
-	<head>
-		<title> Login </title>
-		<meta charset="UTF-8"/>
-		<link rel = "stylesheet" href = "/static/styles.css" type = "text/css" />
-	</head>
+<div class = "pull-left login">
+	<img class = "login-left" src = "/static/Images/login_left.jpg"/>
+</div>
 
-	<body>
-		<div class = "wrapper">
-			<div class = "container">
-				<div class = "subwrapper">
-					<div class = "pull-left login">
-						<img class = "login-left" src = "/static/Images/login_left.jpg"/>
-					</div>
+<div class = "pull-right login">
+	<form class = "form-login">
+		<span>
+			<label class = "label"> USERNAME: </label> <input class = "input" name = "username" type = "text" id = "login_username"/>
+		</span>
+		<span>
+			<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" type = "password" id = "login_password"/>
+		</span>
 
-					<div class = "pull-right login">
-						<form class = "form-login">
-							<span>
-								<label class = "label"> USERNAME: </label> <input class = "input" name = "username" type = "text" id = "login_username"/>
-							</span>
-							<span>
-								<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" type = "password" id = "login_password"/>
-							</span>
+		<input class = "btn" type = "submit" value = "LOG IN" id = "login" />
+	</form>
 
-							<input class = "btn" type = "submit" value = "LOG IN" id = "login" />
-						</form>
+	<div id="alert-wrapper" class="alert-wrapper">
+	</div>
+	<div class = "register">
+		<h2>SIGN UP </h2>
+		<hr>
+		<form>
+			<span>
+				<label class = "label"> NAME: </label> <input class = "input" name = "name" type = "text" id="name"/>
+			</span>
+			<span>
+				<label class = "label"> USERNAME: </label> <input class = "input" name = "username" type = "text" id="username"/>
+			</span>
+			<span>
+				<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" type = "password" id="password"/>
+			</span>
+			<span>
+				<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input" name = "re-type_password" type = "password" id="password2"/>
+			</span>
 
-						<div id="alert-wrapper" class="alert-wrapper">
-						</div>
-						<div class = "register">
-							<h2>SIGN UP </h2>
-							<hr>
-							<form>
-								<span>
-									<label class = "label"> NAME: </label> <input class = "input" name = "name" type = "text" id="name"/>
-								</span>
-								<span>
-									<label class = "label"> USERNAME: </label> <input class = "input" name = "username" type = "text" id="username"/>
-								</span>
-								<span>
-									<label class = "label"> PASSWORD: </label> <input class = "input" name = "password" type = "password" id="password"/>
-								</span>
-								<span>
-									<label class = "label"> RE-TYPE PASSWORD: </label> <input class = "input" name = "re-type_password" type = "password" id="password2"/>
-								</span>
-
-								<input class = "btn" type = "submit" value = "REGISTER" id="register" />
-							</form>
-						</div>
-					</div>
-
-				</div>
-			</div>
-		</div>
-
-	<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"> </script>
-	<script src="/socket.io/socket.io.js"></script>
-	<script type="text/javascript" src="static/main.js"> </script>
-	</body>
-</html>
+			<input class = "btn" type = "submit" value = "REGISTER" id="register" />
+		</form>
+	</div>
+</div>

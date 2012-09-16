@@ -30,6 +30,12 @@ var server = require('http').createServer(function(request, response) {
             return;
         }
 
+        var header = "", footer = "";
+        if (contentType === 'html') {
+            header = fs.readFileSync(__dirname + '/../page/header.html');
+            footer = fs.readFileSync(__dirname + '/../page/footer.html');
+        }
+
         fs.readFile(filePath, function (error, data) {
             if (error) {
                 response.writeHead(500);
@@ -38,6 +44,14 @@ var server = require('http').createServer(function(request, response) {
 
 
             response.writeHead(200, {'Content-Type': 'text/' + contentType});
+            if (header !== "") {
+                data = header + data;
+            }
+
+            if (footer !== "") {
+                data = data + footer;
+            }
+
             response.end(data);
         })
     });
