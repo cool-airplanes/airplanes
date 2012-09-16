@@ -4,8 +4,6 @@ var verify = require('../verifier');
 var user = {}
 
 user.add = function(username, name, password, callback) {
-    // TODO: hash password
-
     // input validation
     userCheck = verify.isValidUsername(username);
     passwordCheck = verify.isValidPassword(password);
