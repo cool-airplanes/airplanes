@@ -48,8 +48,8 @@ function login(socket, username, password) {
 
         session.lobby.set(username, true);
 
-        socket.emit('login-response', {"ok" : true, "what" : "OK!", "html": loader.loadPage("lobby.html")});
         sendToLobby('user-login', {"username" : username, "name" : result.name});
+        socket.emit('login-response', {"ok" : true, "what" : "OK!", "html": loader.loadPage("lobby.html")});
     });
 }
 
