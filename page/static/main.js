@@ -15,7 +15,14 @@ function alerts(message) {
 }
 
 socket.on('register-response', alerts);
-socket.on('login-response', alerts);
+socket.on('login-response', function(data) {
+    if (!data.ok) {
+        alerts(data);
+        return;
+    }
+
+    document.getElementById("main-content").innerHTML = data.html;
+});
 
 $(function() {
     $(document).on("click", "#register", function() {

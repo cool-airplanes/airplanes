@@ -1,4 +1,5 @@
 var db = require('../../db/util');
+var loader = require('../loader');
 var session = require('../../www/session');
 var security = require('../security');
 
@@ -47,7 +48,7 @@ function login(socket, username, password) {
 
         session.lobby.set(username, true);
 
-        socket.emit('login-response', {"ok" : true, "what" : "OK!"});
+        socket.emit('login-response', {"ok" : true, "what" : "OK!", "html": loader.loadPage("lobby.html")});
         sendToLobby('user-login', {"username" : username, "name" : result.name});
     });
 }
@@ -60,7 +61,8 @@ function logout(socket) {
 
     var user = session.users.get(session.sockets.get(socket.id).username);
 
-    for (var )
+    cancelSentChallenges(user);
+    rejectReceivedChallenges(user);
 
     session.users.remove(user.username);
     session.lobby.remove(user.username);
@@ -160,10 +162,22 @@ function cancelSentChallenges(user) {
         var challenged = session.users.get(username);
 
         delete challenged.challengedBy[user.username];
-        challenged.socket.emit('challenged-canceled', { opponent: user.username });
+        challenged.socket.emit('challenge-canceled', { opponent: user.username });
     }
 
     user.challenged = {};
+}
+
+// Unexported
+function rejectReceivedChallenges(user) {
+    for (var username in user.challengedBy) {
+        var challenger = session.users.get(username);
+
+        delete challenger.challenged[user.username];
+        challenger.socket.emit('challenge-rejected', { opponent: user.username });
+    }
+
+    user.challengedBy = {};
 }
 
 module.exports.connect = connect;
@@ -172,3 +186,5 @@ module.exports.login = login;
 module.exports.logout = logout;
 module.exports.disconnect = disconnect;
 module.exports.sendUserList = sendUserList;
+module.exports.challengeQuestion = challengeQuestion;
+module.exports.challengeAnswer = challengeAnswer;
