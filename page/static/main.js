@@ -15,7 +15,15 @@ function alerts(message) {
 }
 
 socket.on('register-response', alerts);
-socket.on('login-response', alerts);
+socket.on('login-response', function(data) {
+    if (!data.ok) {
+        alerts(data);
+        return;
+    }
+
+    document.getElementById("main-content").innerHTML = data.html;
+    socket.emit('user-list');
+});
 
 $(function() {
     $(document).on("click", "#register", function() {
@@ -47,11 +55,3 @@ $(function() {
         return false;
     })
 });
-
-socket.on('user-list-response', function(userList) {
-    console.debug(userList);
-
-    socket.on('user-login', function(user) { console.log("User Login: " + user.username); });
-    socket.on('user-logout', function(user) { console.log("User Logout: " + user.username); });
-});
-socket.emit('user-list');

@@ -19,4 +19,5 @@ mongodb.users.find({}, function(err, results) {
     }
 
     console.log("Done.")
+    process.exit(0);
 });

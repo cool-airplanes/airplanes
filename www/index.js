@@ -73,4 +73,7 @@ io.sockets.on('connection', function(socket) {
     // we clear the user from the set, logging him out if he was logged in
     socket.on('disconnect', user.disconnect.bind(this, socket));
     socket.on('user-list', user.sendUserList.bind(this, socket));
+
+    socket.on('challenge-question', user.challengeQuestion.bind(this, socket));
+    socket.on('challenge-answer', user.challengeAnswer.bind(this, socket));
 });
