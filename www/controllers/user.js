@@ -83,7 +83,8 @@ function sendUserList(socket) {
     var userList = new Array();
     for (var username in session.users.data) {
         var user = session.users.get(username);
-        userList.push({"username" : user.username, "name" : user.name});
+        if (user.username != session.sockets.get(socket.id).username)
+            userList.push({"username" : user.username, "name" : user.name});
     }
 
     userList.sort(function (user1, user2) {
