@@ -10,6 +10,8 @@ verifier.isValidUsername = function(username) {
 verifier.isValidPassword = function(password) {
     if (typeof(password) != "string")
         return{"ok":false, "what":"Password must be string"};
+    if (password.length < 5 || password.length > 30)
+        return {"ok":false, "what":"Password must be between 5 and 30 characters"}
     return {"ok":true, "what" : "OK!"};
 }
 
