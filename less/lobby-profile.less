@@ -2,9 +2,10 @@
     width: 410px;
     height: 70px;
     padding: 0;
-    margin: 0;
+    margin: 1px;
     background-color: @background-color; 
-    border: solid 1px #dfdfdf;
+    //border: solid 1px #dfdfdf;
+    box-shadow: 0 0 0 1px #dfdfdf;
 
     .score {
         display: block;
@@ -88,7 +89,8 @@
 
     &:hover {
         cursor: pointer;
-        box-shadow: 3px 3px 3px #000000;
+        box-shadow: 0 0 4px #333333,
+                    0 0 4px #333333;
     }
 }
 
@@ -108,6 +110,6 @@
     }
 
     &.pull-right {
-        width: 500px;
+        width: 400px;
     }
 }
