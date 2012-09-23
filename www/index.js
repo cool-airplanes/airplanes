@@ -61,6 +61,7 @@ var io = require('socket.io').listen(server);
 server.listen(8080, '127.0.0.1');
 
 var user = require('./controllers/user');
+var game = require('./controllers/game');
 
 io.sockets.on('connection', function(socket) {
     // we create the session and
@@ -76,4 +77,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('challenge-question', user.challengeQuestion.bind(this, socket));
     socket.on('challenge-answer', user.challengeAnswer.bind(this, socket));
+
+    socket.on('game-init', game.start.bind(this, socket));
 });
+
