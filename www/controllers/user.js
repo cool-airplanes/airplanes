@@ -2,6 +2,7 @@ var db = require('../../db/util');
 var loader = require('../loader');
 var session = require('../../www/session');
 var security = require('../security');
+var game = require('./game');
 
 var userListUpdated = false;
 
@@ -99,7 +100,7 @@ function sendUserList(socket) {
 }
 
 function challengeQuestion(socket, data) {
-    var challenger = session.users.get(socket.username);
+    var challenger = session.users.get(session.sockets.get(socket.id).username);
     var challenged = session.users.get(data.opponent);
 
     if (!challenged)
@@ -118,21 +119,19 @@ function challengeQuestion(socket, data) {
     challenger.challenged[challenged.username] = true;
     challenged.challengedBy[challenger.username] = true;
 
-    challenged.socket.emit('challenge-received', { opponent: challenger.username });
-    challenger.socket.emit('challenge-question-response', { ok: true, what: "Challenge sent to " + challenged.name + "!", opponent: challenged.username });
+    challenged.socket.emit('challenge-received', { ok: true, what: "You have been challenged by " + challenger.name + "!", opponent: challenger.username });
+    challenger.socket.emit('challenge-question-response', { ok: true, what: "You have challenged " + challenged.name + "!", opponent: challenged.username });
 }
 
 function challengeAnswer(socket, data) {
-    var challenger = session.users.get(data.username);
-    var challenged = session.users.get(socket.username);
+    var challenger = session.users.get(data.opponent);
+    var challenged = session.users.get(session.sockets.get(socket.id).username);
 
     if (!challenger)
         return;
 
-    if (!challenger.challenged[challenged.username] || !challenged.challengedBy[challenger.username]) {
-        socket.emit('challenge-answer-reponse', { ok: false, what: "Invalid challenge" });
+    if (!challenger.challenged[challenged.username] || !challenged.challengedBy[challenger.username])
         return;
-    }
 
     delete challenger.challenged[challenged.username];
     delete challenged.challengedBy[challenger.username];
@@ -142,12 +141,30 @@ function challengeAnswer(socket, data) {
         return;
     }
 
-    challenger.socket.emit('challenge-rejected', { opponent: challenged.username });
+    challenger.socket.emit('challenge-rejected', { ok: true, what: challenged.name + " has rejected your challenge!", opponent: challenged.username });
+}
+
+function challengeCancel(socket, data) {
+    var challenger = session.users.get(session.sockets.get(socket.id).username);
+    var challenged = session.users.get(data.opponent);
+
+    if (!challenged)
+        return;
+
+    if (!challenger.challenged[challenged.username] || !challenged.challengedBy[challenger.username])
+        return;
+
+    delete challenger.challenged[challenged.username];
+    delete challenged.challengedBy[challenger.username];
+
+    challenged.socket.emit('challenge-canceled', { opponent: challenger.username });
 }
 
 function startGame(user1, user2) {
     cancelSentChallenges(user1);
     cancelSentChallenges(user2);
+
+    game.start(user1, user2);
 }
 
 // Unexported
@@ -189,3 +206,4 @@ module.exports.disconnect = disconnect;
 module.exports.sendUserList = sendUserList;
 module.exports.challengeQuestion = challengeQuestion;
 module.exports.challengeAnswer = challengeAnswer;
+module.exports.challengeCancel = challengeCancel;

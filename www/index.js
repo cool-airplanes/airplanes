@@ -77,6 +77,7 @@ io.sockets.on('connection', function(socket) {
 
     socket.on('challenge-question', user.challengeQuestion.bind(this, socket));
     socket.on('challenge-answer', user.challengeAnswer.bind(this, socket));
+    socket.on('challenge-cancel', user.challengeCancel.bind(this, socket));
 
     socket.on('game-init', game.start.bind(this, socket));
 });
