@@ -1,9 +1,159 @@
-GameBoard = function (nrows, ncols)
+/************************************************************************************************
+	Plane container class -> a little tricky to enable drag and drop
+************************************************************************************************/
+PlaneContainer = function(plane)
+{
+	this.planeContainer = document.createElement("div");
+
+	var plane = new Plane(Plane.Orientation.VerticalUp);
+	this.planeContainer.appendChild(plane);
+
+	this.planeContainer.class = "plane-container";
+	this.planeContainer.id = "plane-container";
+	this.planeContainer.ondrop ="plane.drop(event)";
+	this.planeContainer.ondragover="plane.allowDrop(event)"
+}
+
+
+/*************************************************************************************************
+	Plane class
+**************************************************************************************************/
+
+Plane = function(orientation, gameboard)
+{
+	this.plane = document.createElement("img");
+	this.plane.src = "static/Images/zaPlain.png";
+	this.plane.class = "airplane";
+	this.plane.id = "drag-plane";
+	this.plane.draggable = "true";
+	this.plane.ondragstart = "drag(event)"
+	this.orientation = orientation;
+	this.gameboard = gameboard;
+}
+
+Plane.Orientation = {
+	HorizontalLeft : 'HorizontalLeft',
+	HorizontalRight : 'HorizontalRight',
+	VerticalUp : 'VerticalUp',
+	VerticalDown : 'VerticalDown'
+}
+
+Plane.VerticalUp = {
+	DX: [-1, 0, 0, 0, 0, 0, 1, 2, 2, 2],
+	DY: [0, -2, -1, 0, 1, 2, 0, -1, 0, 1]
+}
+
+Plane.VerticalDown = { 
+	DX: [-2, -2, -2, -1, 0, 0, 0, 0, 0, 1],
+	DY: [-1, 0, 1, 0, -2, -1, 0, 1, 2, 0]
+}
+Plane.HorizontalLeft = {
+	DX: [-2, -1, -1, 0, 0, 0, 0, 1, 1, 2],
+	DY: [0, 0, 2, -1, 0, 1, 2, 0, 2, 0]
+}
+Plane.HorizontalRight = {
+	DX: [-2, -1, -1, 0, 0, 0, 0, 1, 1, 2],
+	DY: [0, -2, 0, -2, -1, 0, 1, -2, 0, 0]
+}
+
+Plane.orientation = Plane.Orientation.HorizontalLeft;
+
+Plane.changeOrientation = function(orientation)
+{
+	Plane.orientation = orientation;
+}
+
+Plane.prototype = {
+	setProprieties: function(top, left)
+	{
+		this.plane.position = "relative";
+		this.plane.style.top = top;
+		this.plane.style.left = left;
+	},
+
+	getNextOrientation: function(orientation)
+	{
+		if (orientation === Plane.Orientation.VerticalUp)
+			return Plane.Orientation.HorizontalRight;
+		else if (orientation === Plane.Orientation.HorizontalRight)
+			return Plane.Orientation.VerticalDown;
+		else if (orientation === Plane.VerticalDown)
+			return Plane.Orientation.HorizontalLeft;
+		else return Plane.Orientation.VerticalUp;
+	},
+
+	placeAirplane: function(event)
+	{
+		var position = this.gameboard.getPositionFromId(event.target.id);
+		if (this.gameboard.validatePosition(position))
+		{
+			var dx = Plane[Plane.orientation].DX;
+			var dy = Plane[Plane.orientation].DY;
+
+			for (var i = 0; i < dx.length; ++i) {
+				var nrow = position[0] + dx[i];
+				var ncol = position[1] + dy[i];
+				console.log([nrow, ncol, i]);
+				document.getElementById('r' + nrow + 'c' + ncol).style.backgroundColor = "#efefef";
+				
+				//TODO !! top + left pt avion in fct de orientare ? eventual
+				//this.setProprieties();
+
+			}
+		}
+	},
+
+	clearAirplane : function(event)
+	{
+		var position = this.getPositionFromId(event.target.id);
+		var dx = Plane[Plane.orientation].DX;
+		var dy = Plane[Plane.orientation].DY;
+
+		for (var i = 0; i < dx.length; ++i) {
+			var nrow = position[0] + dx[i];
+			var ncol = position[1] + dy[i];
+			console.log([nrow, ncol, i]);
+			document.getElementById('r' + nrow + 'c' + ncol).style.backgroundColor = 'white';
+		}
+	},
+
+	rotateAirplane : function(event)
+	{
+		clearAirplane(event);
+		Plane.changeOrientation(this.getNextOrientation(Plane.orientation));
+		placeAirplane(event);
+	},  
+
+	allowDrop : function(event)
+	{
+		event.preventDefault();
+	},
+
+	drag : function(event)
+	{
+		event.dataTransfer.setData("Text",event.target.id);
+	},
+
+	drop : function(event)
+	{
+		event.preventDefault();
+		var data = event.dataTransfer.getData("Text");
+		event.target.appendChild(document.getElementById(data));
+	}
+
+}
+
+/**************************************************************************************************
+	GameBoard class
+***************************************************************************************************/
+
+GameBoard = function (nrows, ncols, player)
 {
 	this.table = document.createElement("table");
-	this.table.id = "my-board";
+	this.table.id = "p-" + player;
 	this._nrows = nrows;
 	this._ncols = ncols;
+	this._player = player;
 
 	for (var i = 0; i < nrows; ++i)
 	{
@@ -13,61 +163,21 @@ GameBoard = function (nrows, ncols)
 		for (var j = 0; j < ncols; ++j) {
 			var cell = document.createElement("td");
 			cell.id = 'r' + i + 'c' + j;
+			
+			//TODO another event listener !!! (need drag and drop)
 			cell.addEventListener("click", this.placeAirplane.bind(this), false);
 			row.appendChild(cell); 	
 		}		
 	}	
 }
 
-GameBoard.Orientation = {
-	HorizontalLeft : 'HorizontalLeft',
-	HorizontalRight : 'HorizontalRight',
-	VerticalUp : 'VerticalUp',
-	VerticalDown : 'VerticalDown'
-}
-
-GameBoard.VerticalUp = {
-	DX: [-1, 0, 0, 0, 0, 0, 1, 2, 2, 2],
-	DY: [0, -2, -1, 0, 1, 2, 0, -1, 0, 1]
-}
-GameBoard.VerticalDown = { 
-	DX: [-2, -2, -2, -1, 0, 0, 0, 0, 0, 1],
-	DY: [-1, 0, 1, 0, -2, -1, 0, 1, 2, 0]
-}
-GameBoard.HorizontalLeft = {
-	DX: [-2, -1, -1, 0, 0, 0, 0, 1, 1, 2],
-	DY: [0, 0, 2, -1, 0, 1, 2, 0, 2, 0]
-}
-GameBoard.HorizontalRight = {
-	DX: [-2, -1, -1, 0, 0, 0, 0, 1, 1, 2],
-	DY: [0, -2, 0, -2, -1, 0, 1, -2, 0, 0]
-}
-
-GameBoard.orientation = GameBoard.Orientation.HorizontalLeft;
-
-GameBoard.changeOrientation = function(orientation)
-{
-	GameBoard.orientation = orientation;
+GameBoard.Dimensions = {
+	cellWidth : "40px",
+	cellHeight : "40px"
 }
 
 GameBoard.prototype = {
-	placeAirplane: function(event)
-	{
-		var position = this.getPositionFromId(event.target.id);
-		if (this.validatePosition(position))
-		{
-			var dx = GameBoard[GameBoard.orientation].DX;
-			var dy = GameBoard[GameBoard.orientation].DY;
-
-			for (var i = 0; i < dx.length; ++i) {
-				var nrow = position[0] + dx[i];
-				var ncol = position[1] + dy[i];
-				console.log([nrow, ncol, i]);
-				document.getElementById('r' + nrow + 'c' + ncol).style.backgroundColor = 'red';
-			}
-		}
-	}, 
-
+	
 	getPositionFromId : function(id)
 	{
 		return [ parseInt(id.split(RegExp('r|c'))[1]), parseInt(id.split(RegExp('r|c'))[2]) ];
@@ -75,8 +185,8 @@ GameBoard.prototype = {
 	
 	validatePosition : function(position)
 	{
-		var dx = GameBoard[GameBoard.orientation].DX;
-		var dy = GameBoard[GameBoard.orientation].DY;
+		var dx = Plane[Plane.orientation].DX;
+		var dy = Plane[Plane.orientation].DY;
 		for (var i = 0; i < dx.length; ++i) {
 			var x = position[0] + dx[i];
 			var y = position[1] + dy[i];
@@ -92,6 +202,16 @@ GameBoard.prototype = {
 		}
 		
 		return true;
+	},
+
+	placeAirplane : function(event)
+	{
+		var plane = new Plane(Plane.Orientation.VerticalUp, this);
+		plane.placeAirplane(event);
+
+		var planeContainer = new PlaneContainer(plane);
+		document.getElementById("main-content").appendChild(planeContainer);
+
 	}	
 }
 
@@ -108,3 +228,35 @@ socket.on('game-init-response', function (data)
 	initGame();
 });
 
+
+/************************************************************************************************
+	Game class
+*************************************************************************************************/
+Game = function(gameBoard1, gameBoard2)
+{
+	this.gameSpace = document.createElement("div");
+	this._gameBoard1 = gameBoard1;
+	this._gameBoard1.id = "gameBoard1";
+	this._gameBoard2 = gameBoard2;
+	this._gameBoard2.id = "gameBoard2";
+	this.gameSpace.appendChild(this._gameBoard1);
+	this.gameSpace.appendChild(this._gameBoard2);
+}
+
+Game.prototype = {
+	start : function(state) 
+	{
+		//TODO game start
+	}
+
+	waiting : function()
+	{
+		//TODO waiting for opponent
+	}
+}
+
+socket.on('game-start-response', function(data){
+	document.getElementById('main-content').innerHTML = data.html;
+	console.log(data.html);
+	play()
+});

@@ -114,6 +114,7 @@ socket.on('challenge-received', function(data) {
 
     var acceptButton = document.createElement("button");
     acceptButton.textContent = "Accept";
+    acceptButton.id = "accept-btn";
     acceptButton.addEventListener("click", function(opponent) {
         socket.emit('challenge-answer', { answer: true, opponent: opponent });
     }.bind(this, data.opponent));
