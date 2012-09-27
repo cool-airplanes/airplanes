@@ -19,16 +19,18 @@ PlaneContainer = function(plane)
     Plane class
 **************************************************************************************************/
 
-Plane = function(orientation, gameboard)
+Plane = function(orientation, gameboard, position)
 {
     this.plane = document.createElement("img");
     this.plane.src = "static/Images/zaPlain.png";
-    this.plane.class = "airplane";
+    //this.plane.class = "airplane";
     this.plane.id = "drag-plane";
     this.plane.draggable = "true";
-    this.plane.ondragstart = "drag(event)"
+    this.plane.ondragstart = "drag(event)";
+    //this.plane.style.position = "absolute";
     this.orientation = orientation;
     this.gameboard = gameboard;
+    this.position = position;
 }
 
 Plane.Orientation = {
@@ -56,7 +58,7 @@ Plane.HorizontalRight = {
     DY: [0, -2, 0, -2, -1, 0, 1, -2, 0, 0]
 }
 
-Plane.orientation = Plane.Orientation.HorizontalLeft;
+Plane.orientation = Plane.Orientation.VerticalUp;
 
 Plane.changeOrientation = function(orientation)
 {
@@ -66,9 +68,9 @@ Plane.changeOrientation = function(orientation)
 Plane.prototype = {
     setProprieties: function(top, left)
     {
-        this.plane.position = "relative";
         this.plane.style.top = top;
         this.plane.style.left = left;
+        console.log(top + ' ' + left);
     },
 
     getNextOrientation: function(orientation)
@@ -85,21 +87,21 @@ Plane.prototype = {
     placeAirplane: function(event)
     {
         var position = this.gameboard.getPositionFromId(event.target.id);
+        console.log(position + " " + GameBoard.Dimensions.cellHeight);
         if (this.gameboard.validatePosition(position))
         {
             var dx = Plane[Plane.orientation].DX;
             var dy = Plane[Plane.orientation].DY;
-
+            console.log(Plane.orientation);
             for (var i = 0; i < dx.length; ++i) {
                 var nrow = position[0] + dx[i];
                 var ncol = position[1] + dy[i];
                 console.log([nrow, ncol, i]);
-                document.getElementById('r' + nrow + 'c' + ncol).style.backgroundColor = "#efefef";
-                
-                //TODO !! top + left pt avion in fct de orientare ? eventual
-                //this.setProprieties();
-
+                document.getElementById('r' + nrow + 'c' + ncol).style.backgroundColor = "red";
             }
+            this.setProprieties(parseInt(GameBoard.Dimensions.cellHeight) * (position[0] - dx[0]), parseInt(GameBoard.Dimensions.cellWidth) * (position[1] - dy[0]));
+            console.log(this.plane.style.top);
+            document.getElementById('game-board').appendChild(this.plane);
         }
     },
 
@@ -115,6 +117,7 @@ Plane.prototype = {
             console.log([nrow, ncol, i]);
             document.getElementById('r' + nrow + 'c' + ncol).style.backgroundColor = 'white';
         }
+        document.getElementById('pull-right').removeChild(this.plane);
     },
 
     rotateAirplane : function(event)
@@ -166,6 +169,7 @@ GameBoard = function (nrows, ncols, player)
             
             //TODO another event listener !!! (need drag and drop)
             cell.addEventListener("click", this.placeAirplane.bind(this), false);
+            cell.addEventListener("right-click", this.rotateAirplane.bind(this), false);
             row.appendChild(cell);  
         }       
     }   
@@ -209,10 +213,20 @@ GameBoard.prototype = {
         var plane = new Plane(Plane.Orientation.VerticalUp, this);
         plane.placeAirplane(event);
 
-        var planeContainer = new PlaneContainer(plane);
-        document.getElementById("main-content").appendChild(planeContainer);
+        //var planeContainer = new PlaneContainer(plane);
+        //document.getElementById("main-content").appendChild(planeContainer);
 
-    }   
+    },
+
+    rotateAirplane : function(event)
+    {
+        var position = this.getPositionFromId(event.target.id);
+        if (document.getElementById(event.target.id).style.backgroundColor === "red")
+        {
+
+        }
+
+    }
 }
 
 initGame = function()
