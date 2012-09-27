@@ -97,5 +97,21 @@ user.update = function(username, name, password, callback) {
         });
     });
 }
+var game = {}
+game.add = function(user1, user2, callback) {
+    // input validation
+    userCheck = verify.isValidUsername(user1);
+    if (!userCheck.ok) {
+        callback(userCheck);
+        return;
+    }
+    userCheck = verify.isValidUsername(user2);
+    if (!userCheck.ok) {
+        callback(userCheck);
+        return;
+    }
+    // TODO: rest of this thing
+}
 
 module.exports.user = user;
+module.exports.game = game;
