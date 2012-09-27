@@ -23,11 +23,11 @@ Plane = function(orientation, gameboard, position)
 {
     this.plane = document.createElement("img");
     this.plane.src = "static/Images/zaPlain.png";
-    //this.plane.class = "airplane";
+    this.plane.class = "airplane";
     this.plane.id = "drag-plane";
     this.plane.draggable = "true";
     this.plane.ondragstart = "drag(event)";
-    //this.plane.style.position = "absolute";
+    this.plane.style.position = "absolute";
     this.orientation = orientation;
     this.gameboard = gameboard;
     this.position = position;
@@ -65,8 +65,8 @@ Plane.orientation = Plane.Orientation.VerticalUp;
 Plane.prototype = {
     setProprieties: function(top, left)
     {
-        this.plane.style.top = top;
-        this.plane.style.left = left;
+        this.plane.style.top = top+"px";
+        this.plane.style.left = left+"px";
         console.log(top + ' ' + left);
     },
 
@@ -186,6 +186,12 @@ GameBoard.Dimensions = {
 }
 GameBoard.MaxPlanes = 2
 GameBoard.nextPlaneID = 0
+GameBoard.State = {
+    PlacingPlanes : 'PlacingPlanes',
+    SelectMove : 'SelectMove',
+    WaitingMove : 'WaitingMove' 
+}
+
 GameBoard.prototype = {
     
     getPositionFromId : function(id)
@@ -223,11 +229,11 @@ GameBoard.prototype = {
         this.planes["plane"+plane.identifier] = plane;
         plane.placeAirplane();
 
-   },
+        var planeContainer = new PlaneContainer(plane);
+        document.getElementById("main-content").appendChild(planeContainer);
 
     rotateAirplane : function(event)
     {
-
         var position = this.getPositionFromId(event.target.id);
         if (document.getElementById(event.target.id).style.backgroundColor === "red")
         {
