@@ -93,7 +93,7 @@ Plane.prototype = {
                 var nrow = position[0] + dx[i];
                 var ncol = position[1] + dy[i];
                 console.log([nrow, ncol, i]);
-                var cell = document.getElementById('r' + nrow + 'c' + ncol);
+                var cell = document.getElementById(this.gameboard._player+ 'r' + nrow + 'c' + ncol);
                 cell.style.backgroundColor = "red";
                 cell.classList.add("plane"+this.identifier);
 
@@ -117,17 +117,17 @@ Plane.prototype = {
             var nrow = position[0] + dx[i];
             var ncol = position[1] + dy[i];
             console.log([nrow, ncol, i]);
-            document.getElementById('r' + nrow + 'c' + ncol).style.backgroundColor = 'white';
+            document.getElementById(this.gameboard._player + 'r' + nrow + 'c' + ncol).style.backgroundColor = 'white';
         }
         document.getElementById('game-board').removeChild(this.plane);
     },
 
-    rotateAirplane : function()//event)
+    rotateAirplane : function()
     {
         this.clearAirplane();
         do {
         this.orientation = this.getNextOrientation(this.orientation);
-        }while(!this.placeAirplane());//event);
+        }while(!this.placeAirplane());
     },  
 
     allowDrop : function(event)
@@ -166,11 +166,11 @@ GameBoard = function (nrows, ncols, player)
     for (var i = 0; i < nrows; ++i)
     {
         var row = document.createElement("tr");
-        row.id = 'r' + i;
+        row.id = this._player + 'r' + i;
         this.table.appendChild(row);
         for (var j = 0; j < ncols; ++j) {
             var cell = document.createElement("td");
-            cell.id = 'r' + i + 'c' + j;
+            cell.id = this._player + 'r' + i + 'c' + j;
             
             //TODO another event listener !!! (need drag and drop)
             cell.addEventListener("click", this.placeAirplane.bind(this), false);
@@ -186,17 +186,13 @@ GameBoard.Dimensions = {
 }
 GameBoard.MaxPlanes = 2
 GameBoard.nextPlaneID = 0
-GameBoard.State = {
-    PlacingPlanes : 'PlacingPlanes',
-    SelectMove : 'SelectMove',
-    WaitingMove : 'WaitingMove' 
-}
 
 GameBoard.prototype = {
     
     getPositionFromId : function(id)
     {
-        return [ parseInt(id.split(RegExp('r|c'))[1]), parseInt(id.split(RegExp('r|c'))[2]) ];
+        var idd = id.split(this._player)[1];
+        return [ parseInt(idd.split(RegExp('r|c'))[1]), parseInt(idd.split(RegExp('r|c'))[2]) ];
     },
     
     validatePosition : function(orientation, position)
@@ -211,7 +207,7 @@ GameBoard.prototype = {
                 console.log("(1) " + x + " " + y);
                 return false;
             }
-            if (document.getElementById('r' + x + 'c' + y).style.backgroundColor === 'red') {
+            if (document.getElementById(this._player + 'r' + x + 'c' + y).style.backgroundColor === 'red') {
                 console.log("(2) " + x + " " + y);
                 return false;
             }
@@ -222,18 +218,34 @@ GameBoard.prototype = {
 
     placeAirplane : function(event)
     {
-        if (this.placedPlanes == GameBoard.MaxPlanes)
-            return false;
-        ++this.placedPlanes;
-        var plane = new Plane(Plane.Orientation.VerticalUp, this, this.getPositionFromId(event.target.id));
-        this.planes["plane"+plane.identifier] = plane;
-        plane.placeAirplane();
+        if (Game.state === Game.State.PlacingPlanes) {
+            if (this.placedPlanes == GameBoard.MaxPlanes)
+                return false;
 
-        var planeContainer = new PlaneContainer(plane);
-        document.getElementById("main-content").appendChild(planeContainer);
+            var plane = new Plane(Plane.Orientation.VerticalUp, this, this.getPositionFromId(event.target.id));
+            this.planes["plane"+plane.identifier] = plane;
+            if (plane.placeAirplane())
+                ++this.placedPlanes;
+            if (this.placedPlanes == GameBoard.MaxPlanes) {
+                var button = document.getElementById("submitTable");
+                button.style.display = "block";
+                button.addEventListener("click", function(){
+                    if (Game.playerBoard)
+                        socket.emit('game-start-request', {'board':Game.playerBoard.listify()});
+                });
+            }
+            var planeContainer = new PlaneContainer(plane);
+            document.getElementById("main-content").appendChild(planeContainer);
+        }
+        else if (Game.state === Game.State.SelectMove && this._player === "opponent"){
+            // TODO: Use selection to select new possible box
+        }
+    },
 
     rotateAirplane : function(event)
     {
+        if (Game.state !== Game.State.PlacingPlanes)
+            return false;
         var position = this.getPositionFromId(event.target.id);
         if (document.getElementById(event.target.id).style.backgroundColor === "red")
         {
@@ -255,50 +267,88 @@ GameBoard.prototype = {
             return false;
         }
 
+    },
+    // This function receives a value for a position
+    move : function(position, value)
+    {
+        // if (value === "hit")
+
+    },
+    listify : function() 
+    {
+        var ret = new Array();
+        for (var i = 0; i < this._nrows; ++i) {
+            var line = new Array();
+            for (var j = 0; j < this._ncols; ++j){
+                var cell = document.getElementById(this._player + 'r' + i + 'c' + j);
+                if (cell.style.backgroundColor === 'red')
+                    line.push(1);
+                else
+                    line.push(0);
+            }
+            ret.push(line);    
+        }
+        return ret;
     }
 }
-
-initGame = function()
-{
-    var gameBoard = new GameBoard(10, 10);
-    document.getElementById("game-board").appendChild(gameBoard.table);
-}
-
-socket.on('game-init-response', function (data)
-{
-    document.getElementById('main-content').innerHTML = data.html;
-    initGame();
-});
 
 
 /************************************************************************************************
     Game class
 *************************************************************************************************/
-Game = function(gameBoard1, gameBoard2)
-{
-    this.gameSpace = document.createElement("div");
-    this._gameBoard1 = gameBoard1;
-    this._gameBoard1.id = "gameBoard1";
-    this._gameBoard2 = gameBoard2;
-    this._gameBoard2.id = "gameBoard2";
-    this.gameSpace.appendChild(this._gameBoard1);
-    this.gameSpace.appendChild(this._gameBoard2);
+Game = {}
+Game.State = {
+    PlacingPlanes : 'PlacingPlanes',
+    AwaitingOpponent : 'AwaitingOpponent',
+    SelectMove : 'SelectMove',
+    WaitingMove : 'WaitingMove' 
 }
+Game.state = Game.State.PlacingPlanes
+
+Game.playerBoard = null;
+
+Game.opponentBoard = null;
+
+Game.playerUsername = null;
+
+Game.playerOpponent = null;
 
 Game.prototype = {
     start : function(state) 
     {
-        //TODO game start
+      Game.opponentBoard = new GameBoard(10, 10, "opponent");
+      document.getElementById("game-board").insertBefore(Game.opponentBoard, Game.playerBoard.table);
     },
 
     waiting : function()
     {
         //TODO waiting for opponent
+        // Do we actually need this, since everything is asynchronous?
     }
 }
+
+initGame = function()
+{
+    var gameboard = new GameBoard(10, 10, "player");
+    Game.playerBoard = gameboard;
+    document.getElementById("game-board").appendChild(Game.playerBoard.table);
+}
+
+socket.on('game-init-response', function (data)
+{
+    var user = session.users.get(session.sockets.get(socket.id).username);
+    document.getElementById('main-content').innerHTML = data.html;
+    initGame();
+});
 
 socket.on('game-start-response', function(data){
     document.getElementById('main-content').innerHTML = data.html;
     console.log(data.html);
-    play()
+});
+
+socket.on('game-receive-move', function(data) {
+    var position = data.position;
+    var value = data.value;
+    GameBoard.playerBoard.move(position, value);
+    Game.state = Game.State.SelectMove;
 });

@@ -18,8 +18,7 @@ var Container = function() {
 var session = {
     lobby : new Container(),
     sockets : new Container(),
-    users : new Container(),
-    games : new Container()
+    users : new Container()
 };
 
 module.exports = session;
