@@ -6,7 +6,7 @@ PlaneContainer = function(plane)
     this.planeContainer = document.createElement("div");
 
     var plane = new Plane(Plane.Orientation.VerticalUp);
-    this.planeContainer.appendChild(plane);
+    this.planeContainer.appendChild(plane.plane);
 
     this.planeContainer.class = "plane-container";
     this.planeContainer.id = "plane-container";
@@ -48,12 +48,12 @@ Plane.VerticalUp = {
 }
 
 Plane.VerticalDown = { 
-    DX: [-2, -2, -2, -1, 0, 0, 0, 0, 0, 1],
-    DY: [-1, 0, 1, 0, -2, -1, 0, 1, 2, 0]
+    DX: [-2,  0, -2, -2, -1,  0, 0, 0, 0, 1],
+    DY: [-1, -2,  0,  1,  0, -1, 0, 1, 2, 0]
 }
 Plane.HorizontalLeft = {
-    DX: [-2, -1, -1, 0, 0, 0, 0, 1, 1, 2],
-    DY: [0, 0, 2, -1, 0, 1, 2, 0, 2, 0]
+    DX: [-2,  0,-1, -1, 0, 0, 0, 1, 1, 2],
+    DY: [ 0, -1, 0,  2, 0, 1, 2, 0, 2, 0]
 }
 Plane.HorizontalRight = {
     DX: [-2, -1, -1, 0, 0, 0, 0, 1, 1, 2],
@@ -98,7 +98,7 @@ Plane.prototype = {
                 cell.classList.add("plane"+this.identifier);
 
             }
-            this.setProprieties(parseInt(GameBoard.Dimensions.cellHeight) * (position[0] - dx[0]), parseInt(GameBoard.Dimensions.cellWidth) * (position[1] - dy[0]));
+            this.setProprieties(parseInt(GameBoard.Dimensions.cellHeight) * (position[0] + dx[0] + 0.2) + 2 * (position[0] + dx[0]), parseInt(GameBoard.Dimensions.cellWidth) * (position[1] + dy[1] + 0.2) + 2 * (position[1] + dy[1]));
             console.log(this.plane.style.top);
             document.getElementById('game-board').appendChild(this.plane);
             return true;
@@ -181,8 +181,8 @@ GameBoard = function (nrows, ncols, player)
 }
 
 GameBoard.Dimensions = {
-    cellWidth : "40px",
-    cellHeight : "40px"
+    cellWidth : 40,
+    cellHeight : 40
 }
 GameBoard.MaxPlanes = 2
 GameBoard.nextPlaneID = 0
@@ -231,14 +231,20 @@ GameBoard.prototype = {
                 button.style.display = "block";
                 button.addEventListener("click", function(){
                     if (Game.playerBoard)
-                        socket.emit('game-start-request', {'board':Game.playerBoard.listify()});
+                        socket.emit('game-start-request', {user : Game.playerBoard._player, 'board':Game.playerBoard.listify()});
+                    Game.state = Game.State.AwaitingOpponent;
+                    document.getElementById("submitTable").style.display = "none";
                 });
             }
-            var planeContainer = new PlaneContainer(plane);
-            document.getElementById("main-content").appendChild(planeContainer);
+            // var planeContainer = new PlaneContainer(plane);
+            // document.getElementById("main-content").appendChild(planeContainer.planeContainer);
         }
-        else if (Game.state === Game.State.SelectMove && this._player === "opponent"){
-            // TODO: Use selection to select new possible box
+        else if (Game.state === Game.State.SelectMove && this._player === Game.opponent){
+            if (event.target.style.backgroundColor === "red" || event.target.style.backgroundColor === "green")
+                return;
+            position = this.getPositionFromId(event.target.id);
+            sendMove(Game.opponent, position);
+            Game.state = Game.State.AwaitingResponse;
         }
     },
 
@@ -268,12 +274,25 @@ GameBoard.prototype = {
         }
 
     },
-    // This function receives a value for a position
-    move : function(position, value)
-    {
-        // if (value === "hit")
 
+    move : function(position, hit)
+    {
+        if (hit)
+            document.getElementById(this._player + 'r' + position[0] + 'c' + position[1]).style.backgroundColor = 'red';
+        else
+            document.getElementById(this._player + 'r' + position[0] + 'c' + position[1]).style.backgroundColor = 'green';
+        Game.state = Game.State.WaitingMove;
     },
+
+    mark : function(position)
+    {
+        var cell = document.getElementById(this._player + 'r' + position[0] + 'c' + position[1]);
+        if (cell.style.backgroundColor === "red")
+            cell.innerHTML = "X";
+        else
+            cell.style.backgroundColor = "green";
+    },
+
     listify : function() 
     {
         var ret = new Array();
@@ -301,6 +320,7 @@ Game.State = {
     PlacingPlanes : 'PlacingPlanes',
     AwaitingOpponent : 'AwaitingOpponent',
     SelectMove : 'SelectMove',
+    AwaitingResponse : 'AwaitingResponse',
     WaitingMove : 'WaitingMove' 
 }
 Game.state = Game.State.PlacingPlanes
@@ -309,14 +329,13 @@ Game.playerBoard = null;
 
 Game.opponentBoard = null;
 
-Game.playerUsername = null;
+Game.player = null;
 
-Game.playerOpponent = null;
+Game.opponent = null;
 
 Game.prototype = {
     start : function(state) 
     {
-      Game.opponentBoard = new GameBoard(10, 10, "opponent");
       document.getElementById("game-board").insertBefore(Game.opponentBoard, Game.playerBoard.table);
     },
 
@@ -327,28 +346,43 @@ Game.prototype = {
     }
 }
 
-initGame = function()
+sendMove = function(player, move) {
+    socket.emit('game-send-move', player, move);
+}
+
+initGame = function(player, opponent)
 {
-    var gameboard = new GameBoard(10, 10, "player");
-    Game.playerBoard = gameboard;
+    Game.playerBoard = new GameBoard(10, 10, player);
+    Game.opponentBoard = new GameBoard(10, 10, opponent);
+    Game.player = player;
+    Game.opponent = opponent;
     document.getElementById("game-board").appendChild(Game.playerBoard.table);
 }
 
+socket.on('game-move-response', function(position, hit){
+    Game.opponentBoard.move(position, hit);
+});
+
 socket.on('game-init-response', function (data)
 {
-    var user = session.users.get(session.sockets.get(socket.id).username);
     document.getElementById('main-content').innerHTML = data.html;
-    initGame();
+    initGame(data.player, data.opponent);
 });
 
 socket.on('game-start-response', function(data){
-    document.getElementById('main-content').innerHTML = data.html;
-    console.log(data.html);
+    if (data.first)
+        Game.state = Game.State.SelectMove;
+    else
+        Game.state = Game.State.WaitingMove;
+    document.querySelector(".subwrapper").removeChild(document.querySelector(".pull-left"));
+    document.getElementById("game-board").insertBefore(Game.opponentBoard.table, Game.playerBoard.table);
 });
 
-socket.on('game-receive-move', function(data) {
-    var position = data.position;
-    var value = data.value;
-    GameBoard.playerBoard.move(position, value);
+socket.on('game-receive-move', function(position) {
+    Game.playerBoard.mark(position);
     Game.state = Game.State.SelectMove;
+});
+socket.on('game-finished', function(won){
+    Game.state = Game.State.PlacingPlanes;
+    
 });

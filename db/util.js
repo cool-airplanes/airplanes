@@ -26,7 +26,9 @@ user.add = function(username, name, password, callback) {
                 "username" : username,
                 "name" : name,
                 "password" : security.encrypt(password),
-                "in_game" : "null"
+                "in_game" : "null",
+                "won" : 0,
+                "lost" : 0
             };
 
             mongodb.users.save(user, function(err, saved) {
@@ -59,13 +61,69 @@ user.get = function(username, callback) {
                         "password" : result[0].password,
                         "name" : result[0].name,
                         "status" : result[0].status,
-                        "in_game" : result[0].in_game
+                        "in_game" : result[0].in_game,
+                        "won" : result[0].won,
+                        "lost" : result[0].lost
                     });
             } else {
                 callback({"ok" : false, "what" : "User does not exist!"}, {});
             }
         }
     });
+}
+user.enterGame = function(username, callback) {
+    // input validation
+    userCheck = verify.isValidUsername(username);
+    console.log ("Checking " + username);
+    if (!userCheck.ok) {
+        callback(userCheck);
+        return;
+    }
+    user.get(username, function(result) {
+        if (!result.ok) {
+            callback(result);
+            return;
+        }
+
+        mongodb.users.update({"username" : username}, {$set: {"in_game": true}}, function(error, updated) {
+            if (error || !updated) {
+                callback({"ok" : false, "what" : "Error saving information"});
+                return;
+            }
+            callback({"ok" : true, "what" : "OK!"});
+        });
+    });
+
+}
+
+user.exitGame = function(username, win, callback) {
+    // input validation
+    userCheck = verify.isValidUsername(username);
+
+    if (!userCheck.ok) {
+        callback(userCheck);
+        return;
+    }
+    user.get(username, function(result) {
+        if (!result.ok) {
+            callback(result);
+            return;
+        }
+        var newWin = result[0].won;
+        var newLose = result[0].lost;
+        if (win)
+            ++newWin;
+        else
+            ++newLose;
+        mongodb.users.update({"username" : username}, {$set: {"in_game": false, "won": newWin, "lost":newLose}}, function(error, updated) {
+            if (error || !updated) {
+                callback({"ok" : false, "what" : "Error saving information"});
+                return;
+            }
+            callback({"ok" : true, "what" : "OK!"});
+        });
+    });
+
 }
 
 user.update = function(username, name, password, callback) {
@@ -97,21 +155,5 @@ user.update = function(username, name, password, callback) {
         });
     });
 }
-var game = {}
-game.add = function(user1, user2, callback) {
-    // input validation
-    userCheck = verify.isValidUsername(user1);
-    if (!userCheck.ok) {
-        callback(userCheck);
-        return;
-    }
-    userCheck = verify.isValidUsername(user2);
-    if (!userCheck.ok) {
-        callback(userCheck);
-        return;
-    }
-    // TODO: rest of this thing
-}
 
 module.exports.user = user;
-module.exports.game = game;

@@ -78,7 +78,8 @@ io.sockets.on('connection', function(socket) {
     socket.on('challenge-question', user.challengeQuestion.bind(this, socket));
     socket.on('challenge-answer', user.challengeAnswer.bind(this, socket));
     socket.on('challenge-cancel', user.challengeCancel.bind(this, socket));
-
-    socket.on('game-init', game.start.bind(this, socket));
+    socket.on('game-send-move', game.sendMove.bind(this, socket));
+    socket.on('game-start-request', game.startRequest.bind(this, socket));
+    socket.on('game-init', game.init.bind(this, socket));
 });
 

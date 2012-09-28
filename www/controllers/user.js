@@ -19,6 +19,7 @@ function register(socket, username, name, password) {
 function login(socket, username, password) {
     db.user.get(username, function(message, result) {
         if (!message.ok) {
+            console.log(message.what);
             socket.emit('login-response', message);
             return;
         }
@@ -31,7 +32,7 @@ function login(socket, username, password) {
             socket.emit('login-response', {"ok" : false, "what" : "User already logged in"});
             return;
         }
-
+        console.log(message.what);
         session.sockets.get(socket.id).username = username;
         session.sockets.get(socket.id).password = security.encrypt(password);
         session.sockets.get(socket.id).name = result.name;
@@ -43,13 +44,15 @@ function login(socket, username, password) {
             "name" : result.name,
             "game" : undefined,
             "socket" : socket,
+            "won" : result.won,
+            "lost" : result.lost,
             "challenged" : {},
             "challengedBy" : {}
         });
 
         session.lobby.set(username, true);
 
-        sendToLobby('user-login', {"username" : username, "name" : result.name});
+        sendToLobby('user-login', {"username" : username, "name" : result.name, "won" : result.won, "lost":result.lost});
         socket.emit('login-response', {"ok" : true, "what" : "OK!", "html": loader.loadPage("lobby.html")});
     });
 }
@@ -85,7 +88,7 @@ function sendUserList(socket) {
     for (var username in session.users.data) {
         var user = session.users.get(username);
         if (user.username != session.sockets.get(socket.id).username)
-            userList.push({"username" : user.username, "name" : user.name});
+            userList.push({"username" : user.username, "name" : user.name, "won" : user.won, "lost" : user.lost});
     }
 
     userList.sort(function (user1, user2) {
@@ -137,7 +140,7 @@ function challengeAnswer(socket, data) {
     delete challenged.challengedBy[challenger.username];
 
     if (data.answer) {
-        startGame(challenger, challenged);
+        initGame(challenger, challenged);
         return;
     }
 
@@ -160,11 +163,13 @@ function challengeCancel(socket, data) {
     challenged.socket.emit('challenge-canceled', { opponent: challenger.username });
 }
 
-function startGame(user1, user2) {
+function initGame(user1, user2) {
     cancelSentChallenges(user1);
     cancelSentChallenges(user2);
-
-    game.start(user1, user2);
+    // FIXME: really dirty stuff going on down here
+    db.user.enterGame(user1.username, function(message){});
+    db.user.enterGame(user2.username, function(message){});
+    game.init(user1, user2);
 }
 
 // Unexported

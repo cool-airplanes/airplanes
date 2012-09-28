@@ -64,13 +64,13 @@ socket.on('user-list-response', function(userList) {
     var lobbyElement = document.getElementById("lobby");
 
     for (var i = 0; i < userList.length; ++i) {
-        var lobbyUser = new LobbyUser(userList[i].username, userList[i].name, 50, 50, "Waiting for challenge...");
+        var lobbyUser = new LobbyUser(userList[i].username, userList[i].name, userList[i].won, userList[i].lost, "Waiting for challenge...");
         lobbyElement.appendChild(lobbyUser.html);
 
     }
 
     socket.on('user-login', function(user) {
-        var lobbyUser = new LobbyUser(user.username, user.name, 50, 50, "Waiting for challenge...");
+        var lobbyUser = new LobbyUser(user.username, user.name, user.won, user.lost, "Waiting for challenge...");
         document.getElementById("lobby").appendChild(lobbyUser.html);
     });
 
